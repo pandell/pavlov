@@ -182,7 +182,7 @@
          * @returns string of joined description names
          */
         names: function () {
-            return rollup(this, 'name').reverse().join(', ');
+            return rollup(this, 'name').reverse().join(' / ');
         }
     });
 
