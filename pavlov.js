@@ -182,7 +182,7 @@
          * @returns string of joined description names
          */
         names: function () {
-            return rollup(this, 'name').reverse().join(' / ');
+            return rollup(this, 'name').reverse().join(specify.descriptionSeparator);
         }
     });
 
@@ -606,7 +606,8 @@
         },
         api: api,
         globalApi: false,                 // when true, adds api to global scope
-        extendAssertions: addAssertions   // function for adding custom assertions
+        extendAssertions: addAssertions,  // function for adding custom assertions
+        descriptionSeparator: ' / '       // separator used when rolling up names
     };
 }(window));
 
