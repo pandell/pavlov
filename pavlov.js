@@ -56,12 +56,21 @@
             return Array.prototype.slice.call(array);
         },
         /**
-         * returns whether or not an object is an array
-         * @param {Object} obj object to test
-         * @returns whether or not object is array
+         * returns the type of any object (in lowercase)
+         * @param  {Mixed} obj object or any other variable
+         * @return {[type]}     [description]
          */
-        isArray: function (obj) {
-            return Object.prototype.toString.call(obj) === "[object Array]";
+        type: function (obj) {
+            return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
+        },
+        /**
+         * checks if an object is of type type
+         * @param  {String} type e.g. array
+         * @param  {Mixed}  obj  the object to check, e.g. []
+         * @return {Boolean}
+         */
+        is: function (type, object) {
+            return type === util.type(object);
         },
         /**
          * merges properties form one object to another
@@ -405,7 +414,7 @@
                 throw "at least one argument is required";
             }
             var args = util.makeArray(arguments);
-            if (arguments.length === 1 && util.isArray(arguments[0])) {
+            if (arguments.length === 1 && util.is('array', arguments[0])) {
                 args = args[0];
             }
 
@@ -418,7 +427,7 @@
                     util.each(args, function () {
                         var arg = this;
                         api.it("given " + arg + ", " + specification, function () {
-                            fn.apply(this, util.isArray(arg) ? arg : [arg]);
+                            fn.apply(this, util.is('array', arg) ? arg : [arg]);
                         });
                     });
                 }
