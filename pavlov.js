@@ -90,27 +90,15 @@
             }
         },
         /**
-         * Naive display serializer for objects which wraps the objects'
-         * own toString() value with type-specific delimiters.
-         * [] for array
-         * "" for string
-         * Does not currently go nearly detailed enough for JSON use,
-         * just enough to show small values within test results
-         * @param {Object} obj object to serialize
-         * @returns naive display-serialized string representation of the object
+         * Print a readable version of a value / object / whatever.
+         * @param {mixed} obj the object to display
+         * @param {boolean} [printFunctionBody] also display code of functions
          */
-        serialize: function (obj) {
-            if (typeof obj === 'undefined') {
-                return "";
-            } else if (Object.prototype.toString.call(obj) === "[object Array]") {
-                return '[' + obj.toString() + ']';
-            } else if (Object.prototype.toString.call(obj) === "[object Function]") {
-                return "function()";
-            } else if (typeof obj === "string") {
-                return '"' + obj + '"';
-            } else {
-                return obj;
+        prettyPrint: function (obj, printFunctionBody) {
+            if (util.is('function', obj) && printFunctionBody) {
+                return obj.toString();
             }
+            return QUnit.jsDump.parse(obj);
         },
         /**
          * transforms a camel or pascal case string
@@ -208,9 +196,12 @@
      * against any of the bundled assertion handlers and custom ones.
      * @constructor
      * @param {Object} value A test-produced value to assert against
+     * @param {Object} [desc] Optional, e.g. the name of the variable
+     *                        for automatic descriptions
      */
-    function AssertionHandler(value) {
+    function AssertionHandler(value, desc) {
         this.value = value;
+        this.description = desc;
     }
 
     /**
@@ -224,16 +215,30 @@
             AssertionHandler.prototype[name] = function () {
                 // implement this handler against backend
                 // by pre-pending AssertionHandler's current value to args
-                var args =  util.makeArray(arguments);
+                var args = util.makeArray(arguments),
+                    desc = ['asserting',
+                            util.prettyPrint(this.value, fn.shouldPrintFunctionBody),
+                            util.phraseCase(name)],
+                    expected;
+
                 args.unshift(this.value);
+
+                if (this.description) {
+                    desc[1] += ',';
+                    desc.splice(1, 0, 'that (' + this.description + '), being');
+                }
 
                 // if no explicit message was given with the assertion,
                 // then let's build our own friendly one
                 if (fn.length === 2) {
-                    args[1] = args[1] || 'asserting ' + util.serialize(args[0]) + ' ' + util.phraseCase(name);
-                } else if (fn.length === 3) {
-                    var expected = util.serialize(args[1]);
-                    args[2] = args[2] || 'asserting ' + util.serialize(args[0]) + ' ' + util.phraseCase(name) + (expected ? ' ' + expected : expected);
+                    args[1] = args[1] || desc.join(' ');
+                } else if (fn.length === 3 ) {
+                    if (fn.shouldPrintExpected && !fn.shouldPrintExpected(args[1])) {
+                        expected = '';
+                    } else {
+                        expected = ' ' + util.prettyPrint(args[1]);
+                    }
+                    args[2] = args[2] || desc.join(' ') + expected;
                 }
 
                 fn.apply(this, args);
@@ -244,7 +249,7 @@
     /**
      * Add default assertions
      */
-    addAssertions({
+    var defaultAssertions = {
         equals: function (actual, expected, message) {
             adapter.assert(actual == expected, message);
         },
@@ -259,6 +264,9 @@
         },
         isNotStrictlyEqualTo: function (actual, expected, message) {
             adapter.assert(actual !== expected, message);
+        },
+        isOfType: function (actual, expected, message) {
+            adapter.assert(util.is(expected, actual), message);
         },
         isTrue: function (actual, message) {
             adapter.assert(actual, message);
@@ -285,33 +293,56 @@
             adapter.assert(false, message);
         },
         isFunction: function(actual, message) {
-            return adapter.assert(typeof actual === "function", message);
+            return adapter.assert(util.is('function', actual), message);
         },
         isNotFunction: function (actual, message) {
-            return adapter.assert(typeof actual !== "function", message);
+            return adapter.assert(!util.is('function', actual), message);
         },
-        throwsException: function (actual, expectedErrorDescription, message) {
+        /**
+         * This is quite ugly, but I keep it for legacy reasons.
+         * The issue I have with it is that it doesn't allow me to verify
+         * that I throw real Error objects - it considers strings to be
+         * valid too.
+         */
+        throwsException: function (actual, expectedError, message) {
             // can optionally accept expected error message
             try {
                 actual();
                 adapter.assert(false, message);
             } catch (e) {
-                // so, this bit of weirdness is basically a way to allow for the fact
-                // that the test may have specified a particular type of error to catch, or not.
-                // and if not, e would always === e.
-                if (typeof expectedErrorDescription !== 'undefined') {
-                    if ('message' in e) {
-                        adapter.assert(e.message === expectedErrorDescription, message);
-                    } else {
-                        adapter.assert(e === expectedErrorDescription);
-                    }
+                if (expectedError) {
+                    adapter.assert(util.type(e) === util.type(expectedError) &&
+                                   (e.message === expectedError.message ||
+                                    e === expectedError), message);
                 } else {
                     adapter.assert(true, message);
                 }
             }
+        },
+        throwsError: function (actual, message) {
+            try {
+                actual();
+                adapter.assert(false, message);
+            } catch (e) {
+                adapter.assert(util.is('error', e), message);
+            }
+        },
+        throwsErrorWithMessage: function (actual, expectedMessage, message) {
+            try {
+                actual();
+                adapter.assert(false, message);
+            } catch (e) {
+                adapter.assert(util.is('error', e) && e.message === expectedMessage, message);
+            }
         }
-    });
+    };
 
+    defaultAssertions.throwsException.shouldPrintExpected = function (expected) {
+        return !util.is('undefined', expected);
+    };
+    defaultAssertions.throwsException.shouldPrintFunctionBody = true;
+
+    addAssertions(defaultAssertions);
 
     // =====================
     // = pavlov Public API =
@@ -437,10 +468,11 @@
         /**
          * Assert a value against any of the bundled or custom assertions
          * @param {Object} value A value to be asserted
+         * @param {String} [name] The name of the variable, for clearer messages
          * @returns an AssertionHandler instance to fluently perform an assertion with
          */
-        assert: function (value) {
-            return new AssertionHandler(value);
+        assert: function (value, name) {
+            return new AssertionHandler(value, name);
         },
 
         /**
@@ -624,7 +656,7 @@
         api: api,
         globalApi: false,                 // when true, adds api to global scope
         extendAssertions: addAssertions,  // function for adding custom assertions
-        descriptionSeparator: ' / '       // separator used when rolling up names
+        descriptionSeparator: ', '       // separator used when rolling up names
     };
 }(window));
 
