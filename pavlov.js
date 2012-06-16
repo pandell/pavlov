@@ -8,8 +8,9 @@
  * Copyright (c) 2009-2011 Michael Monteleone
  * Licensed under terms of the MIT License (README.markdown)
  */
+/*jshint onevar: false*/
 (function (global) {
-
+    'use strict';
     // ===========
     // = Helpers =
     // ===========
@@ -21,9 +22,11 @@
          * @param {Function} callback callback for each iterated item
          */
         each: function (object, callback) {
-            if (typeof object === 'undefined' || typeof callback === 'undefined'
-                || object === null || callback === null) {
-                throw "both 'target' and 'callback' arguments are required";
+            if (typeof object === 'undefined' ||
+                typeof callback === 'undefined' ||
+                object === null ||
+                callback === null) {
+                throw new Error("both 'target' and 'callback' arguments are required");
             }
             var name,
                 i = 0,
@@ -84,7 +87,8 @@
         extend: function (dest, src) {
             if (typeof dest === 'undefined' || typeof src === 'undefined' ||
                 dest === null || src === null) {
-                throw "both 'source' and 'target' arguments are required";
+                throw new Error("both 'source' and 'target' arguments " +
+                                "are required");
             }
             var prop;
             for (prop in src) {
@@ -100,7 +104,7 @@
          */
         prettyPrint: function (obj, printDetails) {
             var undef;
-            if(obj === undef || obj === null || obj === !!obj) {
+            if(obj === undef || obj === null || obj === true || obj === false) {
                 return '' + obj;
             } else if(util.is('string', obj)) {
                 return '"' + obj + '"';
@@ -118,9 +122,6 @@
                             window.JSON.stringify(obj)
                             : obj;
             }
-
-
-            ;
         },
         /**
          * transforms a camel or pascal case string
@@ -275,17 +276,29 @@
      */
     var defaultAssertions = {
         equals: function (actual, expected, message) {
+            adapter.assert(actual === expected, message);
+        },
+        isSimilarTo: function (actual, expected, message) {
+            /*jshint eqeqeq:false*/
             adapter.assert(actual == expected, message);
+            /*jshint eqeqeq:true*/
+        },
+        isNotSimilarTo: function (actual, expected, message) {
+            /*jshint eqeqeq:false*/
+            adapter.assert(actual != expected, message);
+            /*jshint eqeqeq:true*/
         },
         isEqualTo: function (actual, expected, message) {
-            adapter.assert(actual == expected, message);
+            adapter.assert(actual === expected, message);
         },
         isNotEqualTo: function (actual, expected, message) {
-            adapter.assert(actual != expected, message);
+            adapter.assert(actual !== expected, message);
         },
+        // legacy:
         isStrictlyEqualTo: function (actual, expected, message) {
             adapter.assert(actual === expected, message);
         },
+        // legacy:
         isNotStrictlyEqualTo: function (actual, expected, message) {
             adapter.assert(actual !== expected, message);
         },
@@ -299,10 +312,10 @@
             adapter.assert(actual === false, message);
         },
         isDefined: function (actual, message) {
-            adapter.assert(typeof actual !== 'undefined', message);
+            adapter.assert(actual !== undefined, message);
         },
         isNotDefined: function (actual, message) {
-            adapter.assert(typeof actual === 'undefined', message);
+            adapter.assert(actual === undefined, message);
         },
         pass: function (actual, message) {
             adapter.assert(true, message);
@@ -375,7 +388,7 @@
     defaultAssertions.fail.shouldPrintValue = false;
 
     defaultAssertions.throwsException.shouldPrintExpected = function (expected) {
-        return !util.is('undefined', expected);
+        return expected !== undefined;
     };
     defaultAssertions.throwsException.shouldPrintDetails = true;
 
@@ -393,11 +406,13 @@
         /**
          * Initiates a new Example context
          * @param {String} description Name of what's being "described"
-         * @param {Function} fn Function containing description (before, after, specs, nested examples)
+         * @param {Function} fn Function containing description
+         *                      (before, after, specs, nested examples)
          */
         describe: function (description, fn) {
             if (arguments.length < 2) {
-                throw "both 'description' and 'fn' arguments are required";
+                throw new Error("both 'description' and 'fn' arguments " +
+                                "are required");
             }
 
             // capture reference to current example before construction
@@ -419,7 +434,7 @@
          */
         before: function (fn) {
             if (arguments.length === 0) {
-                throw "'fn' argument is required";
+                throw new Error("'fn' argument is required");
             }
             currentExample.before = fn;
         },
@@ -430,20 +445,22 @@
          */
         after: function (fn) {
             if (arguments.length === 0) {
-                throw "'fn' argument is required";
+                throw new Error("'fn' argument is required");
             }
             currentExample.after = fn;
         },
 
         /**
          * Creates a spec (test) to occur within an example
-         * When not passed fn, creates a spec-stubbing fn which asserts fail "Not Implemented"
+         * When not passed fn, creates a spec-stubbing fn which
+         * asserts fail "Not Implemented"
          * @param {String} specification Description of what "it" "should do"
-         * @param {Function} fn Function containing a test to assert that it does indeed do it (optional)
+         * @param {Function} fn Function containing a test to assert that it
+         *                      does indeed do it (optional)
          */
         it: function (specification, fn) {
             if (arguments.length === 0) {
-                throw "'specification' argument is required";
+                throw new Error("'specification' argument is required");
             }
             if (fn) {
                 if (fn.async) {
@@ -451,15 +468,18 @@
                 }
                 currentExample.specs.push([specification, fn]);
             } else {
-                // if not passed an implementation, create an implementation that simply asserts fail
+                // if not passed an implementation, create an implementation
+                // that simply asserts fail
                 api.it(specification, function () {api.assert.fail('Not Implemented');});
             }
         },
 
         /**
-         * wraps a spec (test) implementation with an initial call to pause() the test runner
+         * wraps a spec (test) implementation with an initial call to pause()
+         * the test runner
          * The spec must call resume() when ready
-         * @param {Function} fn Function containing a test to assert that it does indeed do it (optional)
+         * @param {Function} fn Function containing a test to assert that it
+         *                      does indeed do it (optional)
          */
         async: function (fn) {
             var implementation = function () {
@@ -479,7 +499,7 @@
          */
         given: function () {
             if (arguments.length === 0) {
-                throw "at least one argument is required";
+                throw new Error("at least one argument is required");
             }
             var args = util.makeArray(arguments);
             if (arguments.length === 1 && util.is('array', arguments[0])) {
@@ -520,7 +540,7 @@
          */
         wait: function (ms, fn) {
             if (arguments.length < 2) {
-                throw "both 'ms' and 'fn' arguments are required";
+                throw new Error("both 'ms' and 'fn' arguments are required");
             }
             adapter.pause();
             global.setTimeout(function () {
@@ -570,11 +590,13 @@
         // get a string of fn's body
             source = fn.toString().match(/^[^\{]*\{((.*\s*)*)\}/m)[1];
 
+        /*jshint evil:true*/
         // create a new function with same parameters and
         // body wrapped in a with(extraScope) { }
         fn = new Function (
             "extraScope" + (params ?  ", " + params : ""),
             "with(extraScope) {" + source + "}");
+        /*jshint evil:false*/
 
         // returns a fn wrapper which takes passed args,
         // pre-pends extraScope arg, and applies to modified fn
@@ -594,7 +616,7 @@
      */
     var specify = function (name, fn) {
         if (arguments.length < 2) {
-            throw "both 'name' and 'fn' arguments are required";
+            throw new Error("both 'name' and 'fn' arguments are required");
         }
         examples = [];
         currentExample = null;
@@ -638,7 +660,7 @@
          * @param {String} message message to pass along with assertion
          */
         assert: function (expr, message) {
-            throw "'assert' must be implemented by a test framework adapter";
+            throw new Error("'assert' must be implemented by a test framework adapter");
         },
         /**
          * adapter-specific compilation method.  Translates a nested set of
@@ -648,21 +670,21 @@
          * @param {Array} examples Array of example object instances, possibly nesteds
          */
         compile: function (suiteName, examples) {
-            throw "'compile' must be implemented by a test framework adapter";
+            throw new Error("'compile' must be implemented by a test framework adapter");
         },
         /**
          * adapter-specific pause method.  When an adapter implements,
          * allows for its test runner to pause its execution
          */
         pause: function () {
-            throw "'pause' not implemented by current test framework adapter";
+            throw new Error("'pause' not implemented by current test framework adapter");
         },
         /**
          * adapter-specific resume method.  When an adapter implements,
          * allows for its test runner to resume after a pause
          */
         resume: function () {
-            throw "'resume' not implemented by current test framework adapter";
+            throw new Error("'resume' not implemented by current test framework adapter");
         }
     };
 
@@ -677,11 +699,12 @@
         specify: specify,
         adapter: adapter,
         adapt: function (frameworkName, testFrameworkAdapter) {
-            if ( typeof frameworkName === "undefined" ||
-                typeof testFrameworkAdapter === "undefined" ||
+            if (frameworkName === undefined ||
+                testFrameworkAdapter === undefined ||
                 frameworkName === null ||
                 testFrameworkAdapter === null) {
-                throw "both 'frameworkName' and 'testFrameworkAdapter' arguments are required";
+                throw new Error("both 'frameworkName' and " +
+                            "'testFrameworkAdapter' arguments are required");
             }
             adapter.name = frameworkName;
             util.extend(adapter, testFrameworkAdapter);
@@ -703,7 +726,10 @@
 // =========================
 
 (function () {
+    'use strict';
     if (typeof QUnit === 'undefined') { return; }
+
+    /*global stop start module test deepEqual notDeepEqual */
 
     pavlov.adapt("QUnit", {
         initiate: function (name) {
