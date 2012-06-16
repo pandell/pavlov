@@ -61,6 +61,10 @@
          * @return {[type]}     [description]
          */
         type: function (obj) {
+            var undef;
+            if (obj === undef || obj === null || obj === true || obj === false) {
+                return '' + obj;
+            }
             return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
         },
         /**
@@ -92,13 +96,31 @@
         /**
          * Print a readable version of a value / object / whatever.
          * @param {mixed} obj the object to display
-         * @param {boolean} [printFunctionBody] also display code of functions
+         * @param {boolean} [printDetails] also display code of functions
          */
-        prettyPrint: function (obj, printFunctionBody) {
-            if (util.is('function', obj) && printFunctionBody) {
+        prettyPrint: function (obj, printDetails) {
+            var undef;
+            if(obj === undef || obj === null || obj === !!obj) {
+                return '' + obj;
+            } else if(util.is('string', obj)) {
+                return '"' + obj + '"';
+            } else if(util.is('array', obj)) {
+                return '[' + obj.toString() + ']';
+            } else if(util.is('function', obj)) {
+                return printDetails ? obj.toString() : 'function()';
+            } else if(util.is('object', obj)) {
                 return obj.toString();
+
+            } else {
+                return printDetails && QUnit ?
+                        QUnit.jsDump.parse(obj)
+                        : window.JSON && window.JSON.stringify ?
+                            window.JSON.stringify(obj)
+                            : obj;
             }
-            return QUnit.jsDump.parse(obj);
+
+
+            ;
         },
         /**
          * transforms a camel or pascal case string
@@ -216,10 +238,12 @@
                 // implement this handler against backend
                 // by pre-pending AssertionHandler's current value to args
                 var args = util.makeArray(arguments),
-                    desc = ['asserting',
-                            util.prettyPrint(this.value, fn.shouldPrintFunctionBody),
-                            util.phraseCase(name)],
+                    desc = ['asserting', util.phraseCase(name)],
                     expected;
+
+                if (fn.shouldPrintValue !== false) {
+                    desc.splice(1, 0, util.prettyPrint(this.value, fn.shouldPrintDetails));
+                }
 
                 args.unshift(this.value);
 
@@ -269,21 +293,15 @@
             adapter.assert(util.is(expected, actual), message);
         },
         isTrue: function (actual, message) {
-            adapter.assert(actual, message);
+            adapter.assert(actual === true, message);
         },
         isFalse: function (actual, message) {
-            adapter.assert(!actual, message);
-        },
-        isNull: function (actual, message) {
-            adapter.assert(actual === null, message);
-        },
-        isNotNull: function (actual, message) {
-            adapter.assert(actual !== null, message);
+            adapter.assert(actual === false, message);
         },
         isDefined: function (actual, message) {
             adapter.assert(typeof actual !== 'undefined', message);
         },
-        isUndefined: function (actual, message) {
+        isNotDefined: function (actual, message) {
             adapter.assert(typeof actual === 'undefined', message);
         },
         pass: function (actual, message) {
@@ -291,12 +309,6 @@
         },
         fail: function (actual, message) {
             adapter.assert(false, message);
-        },
-        isFunction: function(actual, message) {
-            return adapter.assert(util.is('function', actual), message);
-        },
-        isNotFunction: function (actual, message) {
-            return adapter.assert(!util.is('function', actual), message);
         },
         /**
          * This is quite ugly, but I keep it for legacy reasons.
@@ -337,10 +349,35 @@
         }
     };
 
+    // Create a bunch of convenience assertions,
+    // isString, isNotString, ..., isNull, isNotNull:
+    util.each([
+        'String',
+        'Array',
+        'Object',
+        'Function',
+        'RegExp',
+        'Date',
+        'Number',
+        'Boolean',
+        'Undefined',
+        'Null'
+    ], function(_i, key) {
+        defaultAssertions['is' + key] = function (actual, message) {
+            adapter.assert(util.is(key.toLowerCase(), actual), message);
+        };
+        defaultAssertions['isNot' + key] = function (actual, message) {
+            adapter.assert(!util.is(key.toLowerCase(), actual), message);
+        };
+    });
+
+    defaultAssertions.pass.shouldPrintValue = false;
+    defaultAssertions.fail.shouldPrintValue = false;
+
     defaultAssertions.throwsException.shouldPrintExpected = function (expected) {
         return !util.is('undefined', expected);
     };
-    defaultAssertions.throwsException.shouldPrintFunctionBody = true;
+    defaultAssertions.throwsException.shouldPrintDetails = true;
 
     addAssertions(defaultAssertions);
 
