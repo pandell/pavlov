@@ -1,5 +1,5 @@
 /**
- * Pavlov - Test framework-independent behavioral API
+ * Pavlov Improved - Test framework-independent behavioral API
  *
  * version 0.4.0pre
  *
@@ -64,8 +64,7 @@
          * @return {[type]}     [description]
          */
         type: function (obj) {
-            var undef;
-            if (obj === undef || obj === null || obj === true || obj === false) {
+            if (obj === undefined || obj === null) {
                 return '' + obj;
             }
             return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
@@ -85,7 +84,7 @@
          * @param {Object} src object containing properies to merge
          */
         extend: function (dest, src) {
-            if (typeof dest === 'undefined' || typeof src === 'undefined' ||
+            if (dest === undefined || src === undefined ||
                 dest === null || src === null) {
                 throw new Error("both 'source' and 'target' arguments " +
                                 "are required");
@@ -101,26 +100,17 @@
          * Print a readable version of a value / object / whatever.
          * @param {mixed} obj the object to display
          * @param {boolean} [printDetails] also display code of functions
+         * @return {string}
          */
         prettyPrint: function (obj, printDetails) {
-            var undef;
-            if(obj === undef || obj === null || obj === true || obj === false) {
-                return '' + obj;
-            } else if(util.is('string', obj)) {
+            if(util.is('string', obj)) {
                 return '"' + obj + '"';
             } else if(util.is('array', obj)) {
                 return '[' + obj.toString() + ']';
             } else if(util.is('function', obj)) {
                 return printDetails ? obj.toString() : 'function()';
-            } else if(util.is('object', obj)) {
-                return obj.toString();
-
             } else {
-                return printDetails && QUnit ?
-                        QUnit.jsDump.parse(obj)
-                        : window.JSON && window.JSON.stringify ?
-                            window.JSON.stringify(obj)
-                            : obj;
+                return '' + obj;
             }
         },
         /**
