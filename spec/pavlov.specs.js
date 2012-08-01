@@ -866,20 +866,21 @@ pavlov.specify("Pavlov", function() {
             it("should pass true to adapter's assert when function throws exception", function(){
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(function(){
+                    assert(function () {
                         // should throw undefined exceptions
                         var totalPrice = unitPrice * quantity;
                     }).throwsException();
                 });
 
                 // verify correct arguments would have been passed to qunit
-                assert(passedArgs).contentsEqual([true,'asserting function() throws exception']);
+                passedArgs[1] = passedArgs[1].replace(/\s+{(?:\s|.)*}/, ''); // take out function body
+                assert(passedArgs).contentsEqual([true,'asserting function () throws exception']);
             });
 
             it("should pass false to adapter's assert when function does not throw exception", function(){
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(function(){
+                    assert(function () {
                         var unitPrice = 10;
                         var quantity = 4;
                         var totalPrice = unitPrice * quantity;
@@ -887,7 +888,8 @@ pavlov.specify("Pavlov", function() {
                 });
 
                 // verify correct arguments would have been passed to qunit
-                assert(passedArgs).contentsEqual([false,'asserting function() throws exception']);
+                passedArgs[1] = passedArgs[1].replace(/\s+{(?:\s|.)*}/, ''); // take out function body
+                assert(passedArgs).contentsEqual([false,'asserting function () throws exception']);
             });
 
             it("should pass true to adapter's assert when function throws exception with expected description", function(){
