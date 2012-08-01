@@ -582,11 +582,9 @@
      * accept parameters of original function
      */
     function extendScope(fn, thisArg, extraScope) {
-
-        // get a string of the fn's parameters
-        var params = fn.toString().match(/\(([^\)]*)\)/)[1],
-        // get a string of fn's body
-            source = fn.toString().match(/^[^\{]*\{((.*\s*)*)\}/m)[1];
+        var fnAsString = fn.toString(),
+            params = fnAsString.match(/\(([^\)]*)\)/)[1], // get a string of the fn's parameters
+            source = fnAsString.match(/^[^\{]*\{((.*\s*)*)\}/m)[1]; // get a string of fn's body
 
         /*jshint evil:true*/
         /*jslint evil:true*/
