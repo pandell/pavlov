@@ -9,6 +9,8 @@
  * Licensed under terms of the MIT License (README.markdown)
  */
 /*jshint onevar: false*/
+/*jslint browser: true, vars: true, undef: true, plusplus: true, regexp: true, unparam: true */
+
 (function (global) {
     'use strict';
     // ===========
@@ -22,10 +24,7 @@
          * @param {Function} callback callback for each iterated item
          */
         each: function (object, callback) {
-            if (typeof object === 'undefined' ||
-                typeof callback === 'undefined' ||
-                object === null ||
-                callback === null) {
+            if (object === undefined || callback === undefined || object === null || callback === null) {
                 throw new Error("both 'target' and 'callback' arguments are required");
             }
             var name,
@@ -36,15 +35,15 @@
             if (length === undefined) {
                 for (name in object) {
                     if (object.hasOwnProperty(name)) {
-                        if (callback.call( object[name], name, object[name]) === false) {
+                        if (callback.call(object[name], name, object[name]) === false) {
                             break;
                         }
                     }
                 }
             } else {
-                for (value = object[0];
-                    i < length && callback.call(value, i, value) !== false;
-                    value = object[++i]) {
+                value = object[0];
+                while (i < length && callback.call(value, i, value) !== false) {
+                    value = object[++i];
                 }
             }
 
@@ -65,7 +64,7 @@
          */
         type: function (obj) {
             if (obj === undefined || obj === null) {
-                return '' + obj;
+                return String(obj);
             }
             return Object.prototype.toString.call(obj).slice(8, -1).toLowerCase();
         },
@@ -84,8 +83,7 @@
          * @param {Object} src object containing properies to merge
          */
         extend: function (dest, src) {
-            if (dest === undefined || src === undefined ||
-                dest === null || src === null) {
+            if (dest === undefined || src === undefined || dest === null || src === null) {
                 throw new Error("both 'source' and 'target' arguments " +
                                 "are required");
             }
@@ -103,15 +101,16 @@
          * @return {string}
          */
         prettyPrint: function (obj, printDetails) {
-            if(util.is('string', obj)) {
+            if (util.is('string', obj)) {
                 return '"' + obj + '"';
-            } else if(util.is('array', obj)) {
-                return '[' + obj.toString() + ']';
-            } else if(util.is('function', obj)) {
-                return printDetails ? obj.toString() : 'function()';
-            } else {
-                return '' + obj;
             }
+            if (util.is('array', obj)) {
+                return '[' + obj.toString() + ']';
+            }
+            if (util.is('function', obj)) {
+                return printDetails ? obj.toString() : 'function()';
+            }
+            return String(obj);
         },
         /**
          * transforms a camel or pascal case string
@@ -129,7 +128,8 @@
     // = Example Building =
     // ====================
 
-    var examples = [],
+    var specify, adapter,
+        examples = [],
         currentExample,
         /**
          * Rolls up list of current and ancestors values for given prop name
@@ -223,7 +223,7 @@
      * assertion function to assertionHandler prototype which can run implementation
      * @param {Object} asserts Object containing assertion implementations
      */
-    var addAssertions = function (asserts) {
+    function addAssertions(asserts) {
         util.each(asserts, function (name, fn) {
             AssertionHandler.prototype[name] = function () {
                 // implement this handler against backend
@@ -247,7 +247,7 @@
                 // then let's build our own friendly one
                 if (fn.length === 2) {
                     args[1] = args[1] || desc.join(' ');
-                } else if (fn.length === 3 ) {
+                } else if (fn.length === 3) {
                     if (fn.shouldPrintExpected && !fn.shouldPrintExpected(args[1])) {
                         expected = '';
                     } else {
@@ -259,7 +259,7 @@
                 fn.apply(this, args);
             };
         });
-    };
+    }
 
     /**
      * Add default assertions
@@ -270,12 +270,16 @@
         },
         isSimilarTo: function (actual, expected, message) {
             /*jshint eqeqeq:false*/
+            /*jslint eqeq: true */
             adapter.assert(actual == expected, message);
+            /*jslint eqeq: false */
             /*jshint eqeqeq:true*/
         },
         isNotSimilarTo: function (actual, expected, message) {
             /*jshint eqeqeq:false*/
+            /*jslint eqeq: true */
             adapter.assert(actual != expected, message);
+            /*jslint eqeq: false */
             /*jshint eqeqeq:true*/
         },
         isEqualTo: function (actual, expected, message) {
@@ -365,7 +369,7 @@
         'Boolean',
         'Undefined',
         'Null'
-    ], function(_i, key) {
+    ], function (i, key) {
         defaultAssertions['is' + key] = function (actual, message) {
             adapter.assert(util.is(key.toLowerCase(), actual), message);
         };
@@ -449,18 +453,19 @@
          *                      does indeed do it (optional)
          */
         it: function (specification, fn) {
+            var spec = specification;
             if (arguments.length === 0) {
                 throw new Error("'specification' argument is required");
             }
             if (fn) {
                 if (fn.async) {
-                    specification += " asynchronously";
+                    spec += " asynchronously";
                 }
-                currentExample.specs.push([specification, fn]);
+                currentExample.specs.push([spec, fn]);
             } else {
                 // if not passed an implementation, create an implementation
                 // that simply asserts fail
-                api.it(specification, function () {api.assert.fail('Not Implemented');});
+                api.it(spec, function () { api.assert.fail('Not Implemented'); });
             }
         },
 
@@ -492,7 +497,7 @@
                 throw new Error("at least one argument is required");
             }
             var args = util.makeArray(arguments);
-            if (arguments.length === 1 && util.is('array', arguments[0])) {
+            if (args.length === 1 && util.is('array', args[0])) {
                 args = args[0];
             }
 
@@ -573,7 +578,7 @@
      * @returns Modified version of original function with extra scope.  Can still
      * accept parameters of original function
      */
-    var extendScope = function (fn, thisArg, extraScope) {
+    function extendScope(fn, thisArg, extraScope) {
 
         // get a string of the fn's parameters
         var params = fn.toString().match(/\(([^\)]*)\)/)[1],
@@ -581,30 +586,33 @@
             source = fn.toString().match(/^[^\{]*\{((.*\s*)*)\}/m)[1];
 
         /*jshint evil:true*/
+        /*jslint evil:true*/
         // create a new function with same parameters and
         // body wrapped in a with(extraScope) { }
-        fn = new Function (
+        fn = new Function(
             "extraScope" + (params ?  ", " + params : ""),
-            "with(extraScope) {" + source + "}");
+            "with(extraScope) {" + source + "}"
+        );
+        /*jslint evil:false*/
         /*jshint evil:false*/
 
         // returns a fn wrapper which takes passed args,
         // pre-pends extraScope arg, and applies to modified fn
         return function () {
             var args = [extraScope];
-            util.each(arguments,function () {
+            util.each(arguments, function () {
                 args.push(this);
             });
             fn.apply(thisArg, args);
         };
-    };
+    }
 
     /**
      * Top-level Specify method.  Declares a new pavlov context
      * @param {String} name Name of what's being specified
      * @param {Function} fn Function containing exmaples and specs
      */
-    var specify = function (name, fn) {
+    specify = function specify(name, fn) {
         if (arguments.length < 2) {
             throw new Error("both 'name' and 'fn' arguments are required");
         }
@@ -612,10 +620,10 @@
         currentExample = null;
 
         // set the test suite title
-        name += " Specifications";
+        var specName = name + " Specifications";
 
         // run the adapter initiation
-        adapter.initiate(name);
+        adapter.initiate(specName);
 
         if (specify.globalApi) {
             // if set to extend global api,
@@ -629,7 +637,7 @@
         }
 
         // compile examples against the adapter and then run them
-        adapter.compile(name, examples)();
+        adapter.compile(specName, examples)();
     };
 
     // ====================================
@@ -637,7 +645,7 @@
     // ====================================
 
     // abstracts functionality of underlying testing framework
-    var adapter = {
+    adapter = {
         /**
          * adapter-specific initialization code
          * which is called once before any tests are run
@@ -689,12 +697,8 @@
         specify: specify,
         adapter: adapter,
         adapt: function (frameworkName, testFrameworkAdapter) {
-            if (frameworkName === undefined ||
-                testFrameworkAdapter === undefined ||
-                frameworkName === null ||
-                testFrameworkAdapter === null) {
-                throw new Error("both 'frameworkName' and " +
-                            "'testFrameworkAdapter' arguments are required");
+            if (!frameworkName || !testFrameworkAdapter) {
+                throw new Error("both 'frameworkName' and 'testFrameworkAdapter' arguments are required");
             }
             adapter.name = frameworkName;
             util.extend(adapter, testFrameworkAdapter);
@@ -717,15 +721,15 @@
 
 (function () {
     'use strict';
-    if (typeof QUnit === 'undefined') { return; }
+    /*global document: false, QUnit: false, pavlov: false, ok: false, stop: false, start: false, module: false, test: false, deepEqual: false, notDeepEqual: false */
 
-    /*global stop start module test deepEqual notDeepEqual */
+    if (QUnit === undefined) { return; }
 
     pavlov.adapt("QUnit", {
         initiate: function (name) {
             // after suite loads, set title and header on the report page
             QUnit.addEvent(window, 'load', function () {
-                if (typeof document !== 'undefined') {
+                if (document !== undefined) {
                     document.title = name + ' - Pavlov - QUnit';
                 }
 
@@ -791,7 +795,7 @@
                 each(example.specs, function () {
                     var spec = this;
                     statements.push(function () {
-                        test(spec[0],spec[1]);
+                        test(spec[0], spec[1]);
                     });
                 });
 
