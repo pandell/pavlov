@@ -330,9 +330,13 @@
                 adapter.assert(false, message);
             } catch (e) {
                 if (expectedError) {
-                    adapter.assert(util.type(e) === util.type(expectedError) &&
-                                   (e.message === expectedError.message ||
-                                    e === expectedError), message);
+                    var expectedErrorType = util.type(expectedError);
+                    var actualMessage = ((typeof e === 'object' && e.message) || e);
+                    if (typeof expectedErrorType === 'string') {
+                        adapter.assert(actualMessage === expectedError, message);
+                    } else {
+                        adapter.assert(util.type(e) === expectedErrorType && actualMessage === expectedError.message, message);
+                    }
                 } else {
                     adapter.assert(true, message);
                 }
