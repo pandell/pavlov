@@ -377,7 +377,7 @@ pavlov.specify("Pavlov", function() {
                 it("should test for each of given()'s args when passed flat args", function(x) {
                     assert(x).equals(singleArgGivenCount + 1);
                     singleArgGivenCount++;
-            });
+                });
 
             var multiArgGivenCount = 0;
 
