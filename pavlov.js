@@ -496,11 +496,11 @@
          * function to be called for each of given's arguments
          * @param {Array} arguments either list of values or list of arrays of values
          */
-        given: function () {
-            if (arguments.length === 0) {
+        given: function given() {
+            var args = arguments;
+            if (args.length === 0) {
                 throw new Error("at least one argument is required");
             }
-            var args = util.makeArray(arguments);
             if (args.length === 1 && util.is('array', args[0])) {
                 args = args[0];
             }
@@ -510,9 +510,8 @@
                  * Defines a row spec (test) which is applied against each
                  * of the given's arguments.
                  */
-                it: function (specification, fn) {
-                    util.each(args, function () {
-                        var arg = this;
+                it: function given_it(specification, fn) {
+                    util.each(args, function (i, arg) {
                         api.it("given " + arg + ", " + specification, function () {
                             fn.apply(this, util.is('array', arg) ? arg : [arg]);
                         });
