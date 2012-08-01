@@ -623,17 +623,8 @@
 
     pavlov.adapt("QUnit", {
         initiate: function (name) {
-            var addEvent = function (elem, type, fn) {
-                if (elem.addEventListener) {
-                    elem.addEventListener(type, fn, false);
-                } else if (elem.attachEvent) {
-                    elem.attachEvent("on" + type, fn);
-                }
-            };
-
             // after suite loads, set the header on the report page
-            addEvent(window,'load',function () {
-                // document.getElementsByTag('h1').innerHTML = name;
+            QUnit.addEvent(window, 'load', function () {
                 var h1s = document.getElementsByTagName('h1');
                 if (h1s.length > 0) {
                     h1s[0].innerHTML = name;
