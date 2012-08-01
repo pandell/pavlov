@@ -503,10 +503,10 @@ pavlov.specify("Pavlov", function() {
 
         describe("equals()", function() {
 
-            it("should pass true to adapter's assert when expected == actual", function() {
+            it("should pass true to adapter's assert when expected === actual", function() {
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(1).equals(true, "some message");
+                    assert(1).equals(1, "some message");
                 });
 
                 // verify correct arguments would have been passed to qunit
@@ -517,10 +517,10 @@ pavlov.specify("Pavlov", function() {
 
         describe("isEqualTo()", function() {
 
-            it("should pass true to adapter's assert when expected == actual", function() {
+            it("should pass true to adapter's assert when expected === actual", function() {
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(1).isEqualTo(true, "some message");
+                    assert(1).isEqualTo(1, "some message");
                 });
 
                 // verify correct arguments would have been passed to qunit
