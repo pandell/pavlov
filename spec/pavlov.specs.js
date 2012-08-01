@@ -90,7 +90,7 @@ pavlov.specify("Pavlov", function() {
 
     describe("version", function(){
         it("should return the current version", function(){
-            assert(pavlov.version).equals('0.3.0pre');
+            assert(pavlov.version).equals('0.4.0pre');
         });
     });
 
