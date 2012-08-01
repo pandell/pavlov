@@ -1,13 +1,11 @@
 /**
- * QUnit v1.9.0pre - A JavaScript Unit Testing Framework
+ * QUnit v1.9.0 - A JavaScript Unit Testing Framework
  *
  * http://docs.jquery.com/QUnit
  *
- * Copyright 2012 jQuery Foundation and other contributors
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://jquery.org/license
- * Pulled Live from Git Sat Jul  7 19:20:01 UTC 2012
- * Last Commit: b0c3da8d09b1dcbe5dd0877e27386f4b9e8050a1
+ * Copyright (c) 2012 John Resig, Jörn Zaefferer
+ * Dual licensed under the MIT (MIT-LICENSE.txt)
+ * or GPL (GPL-LICENSE.txt) licenses.
  */
 
 /** Font Family and Sizes */
