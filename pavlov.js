@@ -340,6 +340,7 @@
                 } else {
                     adapter.assert(true, message);
                 }
+                return e;
             }
         },
         throwsError: function (actual, message) {
@@ -348,6 +349,7 @@
                 adapter.assert(false, message);
             } catch (e) {
                 adapter.assert(util.is('error', e), message);
+                return e;
             }
         },
         throwsErrorWithMessage: function (actual, expectedMessage, message) {
@@ -356,6 +358,7 @@
                 adapter.assert(false, message);
             } catch (e) {
                 adapter.assert(util.is('error', e) && e.message === expectedMessage, message);
+                return e;
             }
         }
     };
