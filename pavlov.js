@@ -1,11 +1,11 @@
 /**
  * Pavlov Improved - Test framework-independent behavioral API
  *
- * version 0.4.0pre
+ * version 0.4.1-alpha.1
  *
- * http://github.com/mmonteleone/pavlov
+ * Pandell fork, https://github.com/pandell/pavlov
  *
- * Copyright (c) 2009-2011 Michael Monteleone
+ * Copyright (c) 2009-2011 Michael Monteleone, 2012-2014 Pandell Technology
  * Licensed under terms of the MIT License (README.markdown)
  */
 /*jshint onevar: false*/
