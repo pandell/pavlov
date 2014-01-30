@@ -9,7 +9,7 @@
  * Licensed under terms of the MIT License (README.markdown)
  */
 /*jshint onevar: false*/
-/*jslint browser: true, vars: true, undef: true, plusplus: true, regexp: true, unparam: true */
+/*jslint browser: true, vars: true, plusplus: true, regexp: true, unparam: true */
 
 (function (global) {
     'use strict';
@@ -171,8 +171,8 @@
         parent: null,                       // parent example
         children: [],                       // nested examples
         specs: [],                          // array of it() tests/specs
-        before: function () {},              // called before all contained specs
-        after: function () {},               // called after all contained specs
+        before: function () { return; },    // called before all contained specs
+        after: function () { return; },     // called after all contained specs
         /**
          * rolls up this and ancestor's before functions
          * @returns array of functions
@@ -652,7 +652,7 @@
          * which is called once before any tests are run
          * @param {String} suiteName name of the pavlov suite name
          */
-        initiate: function (suiteName) { },
+        initiate: function (suiteName) { return; },
         /**
          * adapter-specific assertion method
          * @param {bool} expr Boolean expression to assert against
