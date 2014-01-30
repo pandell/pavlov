@@ -256,7 +256,7 @@
                     args[2] = args[2] || desc.join(' ') + expected;
                 }
 
-                fn.apply(this, args);
+                return fn.apply(this, args);
             };
         });
     }
