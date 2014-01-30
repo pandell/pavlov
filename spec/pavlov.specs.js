@@ -56,6 +56,12 @@ var global = this;
         contentsEqual: function(actual, expected, message){
             var areEqual = contentsEqual(actual, expected);
             pavlov.adapter.assert(areEqual, message);
+        },
+        /**
+         * Asserts actual string contains the expected string (case sensitive)
+         */
+        contains: function (actual, expected, message) {
+            pavlov.adapter.assert(actual.indexOf(expected) >= 0, message);
         }
     });
 }())
@@ -90,7 +96,7 @@ pavlov.specify("Pavlov", function() {
 
     describe("version", function(){
         it("should return the current version", function(){
-            assert(pavlov.version).equals('0.3.0pre');
+            assert(pavlov.version).equals('0.4.0pre');
         });
     });
 
@@ -1050,7 +1056,7 @@ pavlov.specify("Pavlov", function() {
             it("should update heading to suite name", function(){
                 var h1s = document.getElementsByTagName('h1');
                 if(h1s && h1s.length > 0) {
-                    assert(h1s[0].innerHTML).equals('Pavlov Specifications');
+                    assert(h1s[0].innerHTML).contains('Pavlov Specifications');
                 }
             });
         });

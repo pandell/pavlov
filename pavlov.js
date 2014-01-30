@@ -515,9 +515,6 @@
 
         // set the test suite title
         name += " Specifications";
-        if (typeof document !== 'undefined') {
-            document.title = name + ' - Pavlov - ' + adapter.name;
-        }
 
         // run the adapter initiation
         adapter.initiate(name);
@@ -623,17 +620,12 @@
 
     pavlov.adapt("QUnit", {
         initiate: function (name) {
-            var addEvent = function (elem, type, fn) {
-                if (elem.addEventListener) {
-                    elem.addEventListener(type, fn, false);
-                } else if (elem.attachEvent) {
-                    elem.attachEvent("on" + type, fn);
+            // after suite loads, set title and header on the report page
+            QUnit.addEvent(window, 'load', function () {
+                if (typeof document !== 'undefined') {
+                    document.title = name + ' - Pavlov - QUnit';
                 }
-            };
 
-            // after suite loads, set the header on the report page
-            addEvent(window,'load',function () {
-                // document.getElementsByTag('h1').innerHTML = name;
                 var h1s = document.getElementsByTagName('h1');
                 if (h1s.length > 0) {
                     h1s[0].innerHTML = name;
