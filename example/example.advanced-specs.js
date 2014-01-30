@@ -14,11 +14,11 @@ pavlov.specify("Pavlov Advanced Examples", function(){
 
         it("can time out async functions gracefully even if they never resume", async(function(){
             // Just wait for global timeout.
-            console.log(1);
+            if (window.console) { window.console.log(1); }
         }));
         it("can time out async functions gracefully even if they never resume", async(function(){
             // Just wait for global timeout.
-            console.log(2);
+            if (window.console) { window.console.log(2); }
         }));
     });
 
@@ -34,13 +34,13 @@ pavlov.specify("Pavlov Advanced Examples", function(){
 
         it("can time out async functions gracefully even if they never resume", async(function(){
             // Just wait for timeout.
-            console.log(3);
+            if (window.console) { window.console.log(3); }
         }));
 
 
         it("can time out async functions gracefully even if they never resume", async(function(){
             // Just wait for timeout.
-            console.log(4);
+            if (window.console) { window.console.log(4); }
         }));
     });
 
