@@ -1,15 +1,15 @@
 /**
  * Pavlov Improved - Test framework-independent behavioral API
  *
- * version 0.4.0pre
+ * version 0.4.1-alpha.1
  *
- * http://github.com/mmonteleone/pavlov
+ * Pandell fork, https://github.com/pandell/pavlov
  *
- * Copyright (c) 2009-2011 Michael Monteleone
+ * Copyright (c) 2009-2011 Michael Monteleone, 2012-2014 Pandell Technology
  * Licensed under terms of the MIT License (README.markdown)
  */
 /*jshint onevar: false*/
-/*jslint browser: true, vars: true, undef: true, plusplus: true, regexp: true, unparam: true */
+/*jslint browser: true, vars: true, plusplus: true, regexp: true, unparam: true */
 
 (function (global) {
     'use strict';
@@ -171,8 +171,8 @@
         parent: null,                       // parent example
         children: [],                       // nested examples
         specs: [],                          // array of it() tests/specs
-        before: function () {},              // called before all contained specs
-        after: function () {},               // called after all contained specs
+        before: function () { return; },    // called before all contained specs
+        after: function () { return; },     // called after all contained specs
         /**
          * rolls up this and ancestor's before functions
          * @returns array of functions
@@ -256,7 +256,7 @@
                     args[2] = args[2] || desc.join(' ') + expected;
                 }
 
-                fn.apply(this, args);
+                return fn.apply(this, args);
             };
         });
     }
@@ -340,6 +340,7 @@
                 } else {
                     adapter.assert(true, message);
                 }
+                return e;
             }
         },
         throwsError: function (actual, message) {
@@ -348,6 +349,7 @@
                 adapter.assert(false, message);
             } catch (e) {
                 adapter.assert(util.is('error', e), message);
+                return e;
             }
         },
         throwsErrorWithMessage: function (actual, expectedMessage, message) {
@@ -356,6 +358,7 @@
                 adapter.assert(false, message);
             } catch (e) {
                 adapter.assert(util.is('error', e) && e.message === expectedMessage, message);
+                return e;
             }
         }
     };
@@ -652,7 +655,7 @@
          * which is called once before any tests are run
          * @param {String} suiteName name of the pavlov suite name
          */
-        initiate: function (suiteName) { },
+        initiate: function (suiteName) { return; },
         /**
          * adapter-specific assertion method
          * @param {bool} expr Boolean expression to assert against
