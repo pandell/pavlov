@@ -377,7 +377,7 @@ pavlov.specify("Pavlov", function() {
                 it("should test for each of given()'s args when passed flat args", function(x) {
                     assert(x).equals(singleArgGivenCount + 1);
                     singleArgGivenCount++;
-            });
+                });
 
             var multiArgGivenCount = 0;
 
@@ -503,10 +503,10 @@ pavlov.specify("Pavlov", function() {
 
         describe("equals()", function() {
 
-            it("should pass true to adapter's assert when expected == actual", function() {
+            it("should pass true to adapter's assert when expected === actual", function() {
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(1).equals(true, "some message");
+                    assert(1).equals(1, "some message");
                 });
 
                 // verify correct arguments would have been passed to qunit
@@ -517,10 +517,10 @@ pavlov.specify("Pavlov", function() {
 
         describe("isEqualTo()", function() {
 
-            it("should pass true to adapter's assert when expected == actual", function() {
+            it("should pass true to adapter's assert when expected === actual", function() {
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(1).isEqualTo(true, "some message");
+                    assert(1).isEqualTo(1, "some message");
                 });
 
                 // verify correct arguments would have been passed to qunit
@@ -866,20 +866,21 @@ pavlov.specify("Pavlov", function() {
             it("should pass true to adapter's assert when function throws exception", function(){
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(function(){
+                    assert(function () {
                         // should throw undefined exceptions
                         var totalPrice = unitPrice * quantity;
                     }).throwsException();
                 });
 
                 // verify correct arguments would have been passed to qunit
-                assert(passedArgs).contentsEqual([true,'asserting function() throws exception']);
+                passedArgs[1] = passedArgs[1].replace(/\s+{(?:\s|.)*}/, ''); // take out function body
+                assert(passedArgs).contentsEqual([true,'asserting function () throws exception']);
             });
 
             it("should pass false to adapter's assert when function does not throw exception", function(){
                 var passedArgs = mock(pavlov.adapter, 'assert', function(){
                     // run spec assertion while underlying qunit assertion is mocked
-                    assert(function(){
+                    assert(function () {
                         var unitPrice = 10;
                         var quantity = 4;
                         var totalPrice = unitPrice * quantity;
@@ -887,7 +888,8 @@ pavlov.specify("Pavlov", function() {
                 });
 
                 // verify correct arguments would have been passed to qunit
-                assert(passedArgs).contentsEqual([false,'asserting function() throws exception']);
+                passedArgs[1] = passedArgs[1].replace(/\s+{(?:\s|.)*}/, ''); // take out function body
+                assert(passedArgs).contentsEqual([false,'asserting function () throws exception']);
             });
 
             it("should pass true to adapter's assert when function throws exception with expected description", function(){
