@@ -723,9 +723,9 @@
 // = Default QUnit Adapter =
 // =========================
 
-(function () {
+(function (pavlov) {
     'use strict';
-    /*global document: false, QUnit: false, pavlov: false, ok: false, stop: false, start: false, test: false, deepEqual: false, notDeepEqual: false */
+    /*global document: false, QUnit: false, ok: false, stop: false, start: false, module: false, test: false, deepEqual: false, notDeepEqual: false */
 
     if (QUnit === undefined) { return; }
 
@@ -840,4 +840,4 @@
     // alias pavlov.specify as QUnit.specify for legacy support
     QUnit.specify = pavlov.specify;
     pavlov.util.extend(QUnit.specify, pavlov);
-}());
+}(window.pavlov));
