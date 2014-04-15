@@ -20,8 +20,8 @@ Pavlov extends JavaScript testing framework [QUnit][1] with a rich, higher-level
 
 ### Usage Requirements
 
-* [Node][nodejs]
-* [Bower][bower], (used to retrieve [QUnit][1] (qunit.js, qunit.css))
+* [Node][nodejs] (used to run Bower below)
+* [Bower][bower] (used to retrieve [QUnit][1] (qunit.js, qunit.css))
 
 ### Installing/Developing
 
