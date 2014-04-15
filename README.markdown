@@ -146,13 +146,22 @@ Documentation:
 
 ### Usage Requirements
 
-* [QUnit][1] (qunit.js, qunit.css)
+* [Bower][bower], (used to retrieve [QUnit][1] (qunit.js, qunit.css))
 
 ### Downloading/Installing/Setup
 
-If you're just using Pavlov and not developing it or running its unit tests, just download the [latest packaged release from Github][10].
+If you're just using Pavlov and not developing it or running its unit tests, just download the [latest release from Github][10].
 
 Contained in the package is a barebones **example spec setup**, which is just a standard QUnit test host document including the the normal QUnit dependencies, but also pavlov.js and a spec suite script.
+
+### Developing
+
+If you are going to develop it run the unit tests, you will need a NodeJS development environment:
+
+1. Download and install [NodeJS + NPM][nodejs]
+2. Clone this repository: `git clone git@github.com:pandell/pavlov.git`
+3. Install bower globally: `npm install -g bower`
+4. Inside your local pavlov repo, install bower dependencies: `bower install`
 
 ### Running tests
 
@@ -540,6 +549,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 [7]: http://github.com/jcoglan/packr "PackR"
 [8]: http://rake.rubyforge.org/ "Rake"
 [9]: http://rspec.info/ "RSpec"
-[10]: http://cloud.github.com/downloads/mmonteleone/pavlov/pavlov.zip "Pavlov Download"
-[11]: http://github.com/mmonteleone/pavlov "Pavlov"
-
+[10]: https://github.com/pandell/pavlov/releases "Pavlov Releases"
+[11]: http://github.com/pandell/pavlov "Pavlov (@pandell fork)"
+[bower]: http://bower.io "Bower"
+[nodejs]: http://nodejs.org/download/ "NodeJS Downloads"
