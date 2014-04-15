@@ -18,6 +18,26 @@ Pavlov extends JavaScript testing framework [QUnit][1] with a rich, higher-level
 * Simplified async support
 * Non-DOM-polluting
 
+### Usage Requirements
+
+* [Node][nodejs]
+* [Bower][bower], (used to retrieve [QUnit][1] (qunit.js, qunit.css))
+
+### Installing/Developing
+
+If you're just using Pavlov and not developing it or running its unit tests, just download the [latest release from Github][10].
+
+If you are going to develop it and run the unit tests, you will need a NodeJS development environment:
+
+1. Download and install [NodeJS + NPM][nodejs]
+2. Clone this repository: `git clone git@github.com:pandell/pavlov.git`
+3. Install bower globally: `npm install -g bower`
+4. Inside your local pavlov repo, install bower dependencies: `bower install`
+
+### Running tests
+
+Tests can be run by simply opening the test host document in a browser or by taking advantage of any other tools which can run QUnit tests, including [JsTestDriver][2], [TestSwarm][3], etc.
+
 ### Example!
 
 **Given the following (nested) specification...** (With a nod to [RSpec][9])
@@ -143,29 +163,6 @@ Surprisingly, Pavlov's API similarities with Screw.Unit are purely coincidental 
 
 Documentation:
 --------------
-
-### Usage Requirements
-
-* [Bower][bower], (used to retrieve [QUnit][1] (qunit.js, qunit.css))
-
-### Downloading/Installing/Setup
-
-If you're just using Pavlov and not developing it or running its unit tests, just download the [latest release from Github][10].
-
-Contained in the package is a barebones **example spec setup**, which is just a standard QUnit test host document including the the normal QUnit dependencies, but also pavlov.js and a spec suite script.
-
-### Developing
-
-If you are going to develop it run the unit tests, you will need a NodeJS development environment:
-
-1. Download and install [NodeJS + NPM][nodejs]
-2. Clone this repository: `git clone git@github.com:pandell/pavlov.git`
-3. Install bower globally: `npm install -g bower`
-4. Inside your local pavlov repo, install bower dependencies: `bower install`
-
-### Running tests
-
-Tests can be run by simply opening the test host document in a browser or by taking advantage of any other tools which can run QUnit tests, including [JsTestDriver][2], [TestSwarm][3], etc.  For a demonstration of how this can be accomplished, Pavlov's source uses Pavlov, QUnit, and JsTestDriver to test itself.
 
 ### Creating Examples
 
