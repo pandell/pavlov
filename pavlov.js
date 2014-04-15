@@ -149,7 +149,7 @@
      * Example Class
      * Represents an instance of an example (a describe)
      * contains references to parent and nested examples
-     * exposes methods for returning combined lists of before, after, and names
+     * exposes methods for returning combined lists of "beforeEach", "afterEach", and names
      * @constructor
      * @param {example} parent example to append self as child to (optional)
      */
@@ -171,21 +171,21 @@
         parent: null,                       // parent example
         children: [],                       // nested examples
         specs: [],                          // array of it() tests/specs
-        before: function () { return; },    // called before all contained specs
-        after: function () { return; },     // called after all contained specs
+        beforeEach: function () { return; },// called before each contained spec
+        afterEach: function () { return; }, // called after each contained spec
         /**
-         * rolls up this and ancestor's before functions
+         * rolls up this and ancestor's "beforeEach" functions
          * @returns array of functions
          */
-        befores: function () {
-            return rollup(this, 'before').reverse();
+        beforeEachRollup: function () {
+            return rollup(this, 'beforeEach').reverse();
         },
         /**
-         * Rolls up this and ancestor's after functions
+         * Rolls up this and ancestor's "afterEach" functions
          * @returns array of functions
          */
-        afters: function () {
-            return rollup(this, 'after');
+        afterEachRollup: function () {
+            return rollup(this, 'afterEach');
         },
         /**
          * Rolls up this and ancestor's description names, joined
@@ -408,7 +408,7 @@
          * Initiates a new Example context
          * @param {String} description Name of what's being "described"
          * @param {Function} fn Function containing description
-         *                      (before, after, specs, nested examples)
+         *                      (beforeEach, afterEach, specs, nested examples)
          */
         describe: function (description, fn) {
             if (arguments.length < 2) {
@@ -430,25 +430,25 @@
         },
 
         /**
-         * Sets a function to occur before all contained specs and nested examples' specs
+         * Sets a function to occur before each contained spec and nested examples' specs
          * @param {Function} fn Function to be executed
          */
-        before: function (fn) {
-            if (arguments.length === 0) {
+        beforeEach: function (fn) {
+            if (typeof fn !== "function") {
                 throw new Error("'fn' argument is required");
             }
-            currentExample.before = fn;
+            currentExample.beforeEach = fn;
         },
 
         /**
-         * Sets a function to occur after all contained tests and nested examples' tests
+         * Sets a function to occur after each contained spec and nested examples' specs
          * @param {Function} fn Function to be executed
          */
-        after: function (fn) {
-            if (arguments.length === 0) {
+        afterEach: function (fn) {
+            if (typeof fn !== "function") {
                 throw new Error("'fn' argument is required");
             }
-            currentExample.after = fn;
+            currentExample.afterEach = fn;
         },
 
         /**
@@ -778,9 +778,9 @@
              */
             var compileDescription = function (example) {
 
-                // get before and after rollups
-                var befores = example.befores(),
-                    afters = example.afters();
+                // get "beforeEach" and "afterEach" rollups
+                var befores = example.beforeEachRollup(),
+                    afters = example.afterEachRollup();
 
                 // create a module with setup and teardown
                 // that executes all current befores/afters
