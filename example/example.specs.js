@@ -4,11 +4,11 @@ pavlov.specify("Pavlov Example", function(){
 
         var foo;
 
-        before(function(){
+        beforeEach(function(){
             foo = "bar";
         });
 
-        after(function(){
+        afterEach(function(){
             foo = "baz";
         });
 
@@ -39,7 +39,7 @@ pavlov.specify("Pavlov Example", function(){
 
         describe("can also have nested examples", function(){
 
-            before(function(){
+            beforeEach(function(){
                 foo = foo + "bar";
             });
 
