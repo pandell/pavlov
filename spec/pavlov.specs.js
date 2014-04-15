@@ -230,7 +230,7 @@ pavlov.specify("Pavlov", function() {
         });
 
         var afterCallCount = 0;
-            afterEach(function() {
+        afterEach(function() {
             afterCallCount++;
             afterCalls.push('y');
         });
