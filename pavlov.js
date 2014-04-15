@@ -723,9 +723,9 @@
 // = Default QUnit Adapter =
 // =========================
 
-(function () {
+(function (pavlov) {
     'use strict';
-    /*global document: false, QUnit: false, pavlov: false, ok: false, stop: false, start: false, module: false, test: false, deepEqual: false, notDeepEqual: false */
+    /*global document: false, QUnit: false, ok: false, stop: false, start: false, module: false, test: false, deepEqual: false, notDeepEqual: false */
 
     if (QUnit === undefined) { return; }
 
@@ -785,7 +785,7 @@
                 // create a module with setup and teardown
                 // that executes all current befores/afters
                 statements.push(function () {
-                    module(example.names(), {
+                    QUnit.module(example.names(), {
                         setup: function () {
                             each(befores, function () { this(); });
                         },
@@ -840,4 +840,4 @@
     // alias pavlov.specify as QUnit.specify for legacy support
     QUnit.specify = pavlov.specify;
     pavlov.util.extend(QUnit.specify, pavlov);
-}());
+}(window.pavlov));

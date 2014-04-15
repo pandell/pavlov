@@ -2,13 +2,13 @@ pavlov.specify("Pavlov Advanced Examples", function(){
 
     describe("Testing global timeout", function() {
 
-        before(function(){
+        beforeEach(function(){
             // TODO: figure out how to set this per module / testEnvironment in
             // pavlov.
             QUnit.config.testTimeout = 500;
         });
 
-        after(function() {
+        afterEach(function() {
             QUnit.config.testTimeout = undefined;
         });
 
@@ -24,11 +24,11 @@ pavlov.specify("Pavlov Advanced Examples", function(){
 
     describe("Testing global timeout 2", function() {
 
-        before(function(){
+        beforeEach(function(){
             QUnit.config.testTimeout = 10;
         });
 
-        after(function() {
+        afterEach(function() {
             QUnit.config.testTimeout = undefined;
         });
 
@@ -51,11 +51,11 @@ pavlov.specify("Pavlov Advanced Examples", function(){
 
         var foo;
 
-        before(function(){
+        beforeEach(function(){
             foo = "bar";
         });
 
-        after(function(){
+        afterEach(function(){
             foo = "baz";
         });
 

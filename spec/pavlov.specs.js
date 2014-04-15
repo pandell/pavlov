@@ -224,13 +224,13 @@ pavlov.specify("Pavlov", function() {
         var afterCalls = [];
 
         var beforeCallCount = 0;
-        before(function() {
+        beforeEach(function() {
             beforeCallCount++;
             beforeCalls.push('x');
         });
 
         var afterCallCount = 0;
-        after(function() {
+        afterEach(function() {
             afterCallCount++;
             afterCalls.push('y');
         });
@@ -244,15 +244,15 @@ pavlov.specify("Pavlov", function() {
             }).throwsException("both 'description' and 'fn' arguments are required");
         });
 
-        it("should throw exception when before() not passed an fn", function(){
+        it("should throw exception when beforeEach() not passed an fn", function(){
             assert(function(){
-                before();
+                beforeEach();
             }).throwsException("'fn' argument is required")
         });
 
-        it("should throw exception when after() not passed an fn", function(){
+        it("should throw exception when afterEach() not passed an fn", function(){
             assert(function(){
-                after();
+                afterEach();
             }).throwsException("'fn' argument is required")
         });
 
@@ -261,12 +261,12 @@ pavlov.specify("Pavlov", function() {
             assert.pass();
         });
 
-        it("should execute before() before each it()", function() {
+        it("should execute beforeEach() before each it()", function() {
             assert(beforeCallCount).equals(5);
             assert(afterCallCount).equals(4);
         });
 
-        it("should execute after() after each it()", function() {
+        it("should execute afterEach() after each it()", function() {
             assert(beforeCallCount).equals(6);
             assert(afterCallCount).equals(5);
         });
@@ -274,20 +274,20 @@ pavlov.specify("Pavlov", function() {
         describe("with a nested describe()", function() {
             var variableDefinedInNestedDescribe = "x";
 
-            before(function() {
+            beforeEach(function() {
                 beforeCalls.push('a');
             });
 
-            after(function() {
+            afterEach(function() {
                 afterCalls.push('b');
             });
 
-            it("should execute all before()s from outside-in", function() {
+            it("should execute all beforeEach()s from outside-in", function() {
                 assert(beforeCalls).contentsEqual(['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'a']);
                 assert(afterCalls).contentsEqual(['y', 'y', 'y', 'y', 'y', 'y', 'y']);
             });
 
-            it("should execute all after()s from inside-out", function() {
+            it("should execute all afterEach()s from inside-out", function() {
                 assert(beforeCalls).contentsEqual(['x', 'x', 'x', 'x', 'x', 'x', 'x', 'x', 'a', 'x', 'a']);
                 assert(afterCalls).contentsEqual(['y', 'y', 'y', 'y', 'y', 'y', 'y', 'b', 'y']);
             });
@@ -1114,11 +1114,11 @@ pavlov.specify("Pavlov", function() {
         it("should expose 'describe'", function(){
             assert(pavlov.api.describe).isSameAs(describe);
         });
-        it("should expose 'before'", function(){
-            assert(pavlov.api.before).isSameAs(before);
+        it("should expose 'beforeEach'", function(){
+            assert(pavlov.api.beforeEach).isSameAs(beforeEach);
         });
-        it("should expose 'after'", function(){
-            assert(pavlov.api.after).isSameAs(after);
+        it("should expose 'afterEach'", function(){
+            assert(pavlov.api.afterEach).isSameAs(afterEach);
         });
         it("should expose 'it'", function(){
             assert(pavlov.api.it).isSameAs(it);
