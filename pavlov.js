@@ -1,7 +1,7 @@
 /**
  * Pavlov Improved - Test framework-independent behavioral API
  *
- * version 0.4.1-alpha.1
+ * version 0.4.1-alpha.2
  *
  * Pandell fork, https://github.com/pandell/pavlov
  *
