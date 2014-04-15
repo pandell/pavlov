@@ -29,7 +29,7 @@ describe("Bowling", function(){
 
     // befores and afters:
 
-    before(function(){
+    beforeEach(function(){
         // this setup occurs before all specs both
         // in this example, and any nested examples
         bowling = new Bowling();
@@ -68,9 +68,9 @@ describe("Bowling", function(){
 
     describe("Duck Pin Variation", function(){
 
-        before(function(){
+        beforeEach(function(){
             // setup method which occurs before all of this example's
-            // specs, but after the parent example's before()
+            // specs, but after the parent example's beforeEach()
             bowling.mode = BowlingMode.DuckPin;
         })
 
@@ -196,7 +196,7 @@ Initiates a new Example.  A description translates to a QUnit module.
         it(...
     });
 
-#### before()
+#### beforeEach()
 
 Sets a function to occur before all contained specs and nested examples' specs.  The function(s) is/are executed within a QUnit module's setup option.
 
@@ -209,12 +209,12 @@ Sets a function to occur before all contained specs and nested examples' specs. 
     describe("Bowling", function(){
         var bowling;
 
-        before(function(){
+        beforeEach(function(){
             bowling = new Bowling();
         });
     ...
 
-#### after()
+#### afterEach()
 
 Sets a function to occur after all contained specs and nested examples' specs.  The function(s) is/are executed within a QUnit module's teardown option.
 
@@ -227,7 +227,7 @@ Sets a function to occur after all contained specs and nested examples' specs.  
     describe("Bowling", function(){
         var bowling;
 
-        before(function(){
+        beforeEach(function(){
             bowling = new Bowling();
         });
     ...
@@ -246,15 +246,15 @@ Examples can be nested as deep as necessary.
     //... within a pavlov.specify scope
     describe("Bowling", function(){
         // specs contained within this description
-        before(...
-        after(...
+        beforeEach(...
+        afterEach(...
         it(...
         it(...
 
         // nested example
         describe("Duck Pin Variation", function(){
-            before(...
-            after(...
+            beforeEach(...
+            afterEach(...
             it(...
             it(...
         });
